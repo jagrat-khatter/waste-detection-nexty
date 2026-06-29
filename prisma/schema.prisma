@@ -1,0 +1,16 @@
+// Responsibility: Define backend business-logic persistence schema without duplicating Firebase auth users.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PlaceholderRecord {
+  id          String   @id @default(cuid())
+  firebaseUid String
+  label       String
+  createdAt   DateTime @default(now())
+}
