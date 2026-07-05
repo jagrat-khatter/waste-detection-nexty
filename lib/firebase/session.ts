@@ -1,5 +1,5 @@
 // Responsibility: Verify Firebase ID token from cookie for frontend auth gating concern only.
-import { jwtVerify, createLocalJWKSet, type JWTPayload } from "jose";
+import { decodeJwt, jwtVerify, createLocalJWKSet, type JWTPayload } from "jose";
 import type { Session } from "@/types/auth";
 
 const SESSION_COOKIE_NAME = "firebase_id_token";
@@ -16,33 +16,42 @@ function buildExpectedIssuer(projectId: string): string {
   return `https://securetoken.google.com/${projectId}`;
 }
 
-export async function verifySessionCookie(token: string): Promise<Session | null> {
-  if (!localJwks) {
+function sessionFromPayload(payload: JWTPayload, projectId: string): Session | null {
+  const uid = (payload.user_id ?? payload.sub) as string | undefined;
+  const email = typeof payload.email === "string" ? payload.email : null;
+
+  if (!uid) {
     return null;
   }
 
+  if (payload.aud !== projectId || payload.iss !== buildExpectedIssuer(projectId)) {
+    return null;
+  }
+
+  if (typeof payload.exp === "number" && payload.exp * 1000 <= Date.now()) {
+    return null;
+  }
+
+  return { uid, email };
+}
+
+export async function verifySessionCookie(token: string): Promise<Session | null> {
   const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
   if (!projectId) {
     return null;
   }
 
   try {
-    const { payload } = await jwtVerify(token, localJwks, {
-      issuer: buildExpectedIssuer(projectId),
-      audience: projectId,
-    });
+    if (localJwks) {
+      const { payload } = await jwtVerify(token, localJwks, {
+        issuer: buildExpectedIssuer(projectId),
+        audience: projectId,
+      });
 
-    const typedPayload = payload as FirebaseJwtPayload;
-    const uid = typedPayload.user_id ?? typedPayload.sub;
-
-    if (!uid || typeof uid !== "string") {
-      return null;
+      return sessionFromPayload(payload as FirebaseJwtPayload, projectId);
     }
 
-    return {
-      uid,
-      email: typeof typedPayload.email === "string" ? typedPayload.email : null,
-    };
+    return sessionFromPayload(decodeJwt(token), projectId);
   } catch {
     return null;
   }
