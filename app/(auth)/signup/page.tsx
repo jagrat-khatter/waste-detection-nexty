@@ -1,23 +1,26 @@
-// Responsibility: Render client signup UI for frontend auth concern using Firebase client SDK.
+// Responsibility: Render client signup UI for frontend auth concern
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { signUp } from "@/lib/firebase/client";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"ADMIN" | "COLLECTOR">("COLLECTOR");
   const { user, loading } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
-      router.push("/dashboard");
+      const next = searchParams.get("next") ?? "/dashboard";
+      router.push(next);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
@@ -28,7 +31,19 @@ export default function SignupPage() {
     setSubmitting(true);
 
     try {
-      await signUp(email, password);
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name, role }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Signup failed");
+      }
+      
+      // Force page reload to re-fetch the user context
+      window.location.href = searchParams.get("next") ?? "/dashboard";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
@@ -60,7 +75,7 @@ export default function SignupPage() {
               </li>
               <li>
                 <span className="inline-pill">B</span>
-                Firebase session cookie is written automatically
+                Local auth session cookie is written automatically
               </li>
               <li>
                 <span className="inline-pill">C</span>
@@ -74,10 +89,23 @@ export default function SignupPage() {
           <div>
             <p className="auth-eyebrow">Sign up</p>
             <h1>Create account</h1>
-            <p>Use a new Firebase identity to test the full flow.</p>
+            <p>Create a new staff identity to test the full flow.</p>
           </div>
 
           <form className="auth-card-form" onSubmit={onSubmit}>
+            <div className="field-grid">
+              <label htmlFor="name">Name</label>
+              <input
+                id="name"
+                type="text"
+                autoComplete="name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your full name"
+              />
+            </div>
+            
             <div className="field-grid">
               <label htmlFor="email">Email</label>
               <input
@@ -102,6 +130,20 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create a password"
               />
+            </div>
+
+            <div className="field-grid">
+              <label htmlFor="role">Role</label>
+              <select
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value as "ADMIN" | "COLLECTOR")}
+                required
+                style={{ padding: "0.75rem", borderRadius: "0.375rem", border: "1px solid #d1d5db" }}
+              >
+                <option value="COLLECTOR">Collector</option>
+                <option value="ADMIN">Admin</option>
+              </select>
             </div>
 
             <button className="primary-button" disabled={submitting} type="submit">

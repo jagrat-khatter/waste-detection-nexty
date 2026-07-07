@@ -1,6 +1,6 @@
 // Responsibility: Gate and render the protected dashboard for frontend auth concern.
 import { redirect } from "next/navigation";
-import { getSessionFromCookies } from "@/lib/firebase/session";
+import { getSessionFromCookies } from "@/lib/auth/jwt";
 
 export default async function DashboardPage() {
   const session = await getSessionFromCookies();
@@ -19,7 +19,7 @@ export default async function DashboardPage() {
           switching accounts, exploring profile pages, and testing routes.
         </p>
         <div className="dashboard-meta">
-          <span className="inline-pill">{session.email ?? session.uid}</span>
+          <span className="inline-pill">{session.email ?? session.id}</span>
           <span className="muted">Protected by cookie-backed auth</span>
         </div>
       </section>

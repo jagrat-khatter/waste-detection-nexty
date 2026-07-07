@@ -9,10 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { onAuthStateChanged } from "@/lib/firebase/client";
-import type { Session, User } from "@/types/auth";
-
-const SESSION_COOKIE_NAME = "firebase_id_token";
+import type { User } from "@/types/auth";
 
 type AuthContextValue = {
   user: User | null;
@@ -21,59 +18,36 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-function writeSessionCookie(token: string | null): void {
-  const secure = window.location.protocol === "https:" ? "; Secure" : "";
-
-  if (!token) {
-    document.cookie = `${SESSION_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
-    return;
-  }
-
-  document.cookie = `${SESSION_COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; SameSite=Lax${secure}`;
-}
-
-function toUser(session: Session | null): User | null {
-  if (!session) {
-    return null;
-  }
-
-  return {
-    uid: session.uid,
-    email: session.email,
-  };
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(async (firebaseUser) => {
-      if (!firebaseUser) {
-        writeSessionCookie(null);
-        setSession(null);
+    async function fetchUser() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user session", error);
+        setUser(null);
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const token = await firebaseUser.getIdToken();
-      writeSessionCookie(token);
-      setSession({
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-      });
-      setLoading(false);
-    });
-
-    return unsubscribe;
+    }
+    fetchUser();
   }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      user: toUser(session),
+      user,
       loading,
     }),
-    [loading, session],
+    [loading, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

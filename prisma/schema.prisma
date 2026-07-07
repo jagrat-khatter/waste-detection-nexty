@@ -14,3 +14,69 @@ model PlaceholderRecord {
   label       String
   createdAt   DateTime @default(now())
 }
+
+// 1. Roles exclusively for your internal dashboard team
+enum Role {
+  COLLECTOR
+  ADMIN
+}
+
+enum ReportStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+// 2. Staff table: Only for your web portal users (Admins & Collectors)
+model Staff {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 3. The Business Logic: Reports are linked to normal users purely by their email string
+model WasteReport {
+  id String @id @default(uuid())
+
+  // The unique identifier sent from the mobile app
+  userEmail String
+
+  imageUrl String // Storage bucket path/URL of uploaded waste photo
+  status   ReportStatus @default(PENDING)
+
+  // Geolocation fields
+  latitude  Float?
+  longitude Float?
+  address   String?
+
+  detectedItemsCount Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  detectedItems DetectedItem[]
+
+  // Indexing the email string makes queries like "Get all reports for user@example.com" lightning fast
+  @@index([userEmail])
+}
+
+model DetectedItem {
+  id       String      @id @default(uuid())
+  reportId String
+  report   WasteReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  label      String
+  confidence Float
+
+  xMin Float
+  yMin Float
+  xMax Float
+  yMax Float
+
+  createdAt DateTime @default(now())
+
+  @@index([reportId])
+}

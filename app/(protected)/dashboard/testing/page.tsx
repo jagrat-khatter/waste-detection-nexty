@@ -1,6 +1,6 @@
 // Responsibility: Render the protected dashboard testing page for frontend auth concern.
 import { redirect } from "next/navigation";
-import { getSessionFromCookies } from "@/lib/firebase/session";
+import { getSessionFromCookies } from "@/lib/auth/jwt";
 
 export default async function TestingPage() {
   const session = await getSessionFromCookies();

@@ -1,6 +1,6 @@
 // Responsibility: Enforce auth-first access to business-logic user endpoint in backend concern.
 import { NextResponse } from "next/server";
-import { verifyToken } from "@/lib/firebase/admin";
+import { verifyJwt } from "@/lib/auth/jwt";
 import { prisma } from "@/lib/prisma";
 
 function extractBearerToken(header: string | null): string | null {
@@ -17,13 +17,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const decodedToken = await verifyToken(token);
+  const decodedToken = await verifyJwt(token);
   if (!decodedToken) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const reports = await prisma.placeholderRecord.findMany({
-    where: { firebaseUid: decodedToken.uid },
+  const reports = await prisma.wasteReport.findMany({
+    where: { userEmail: decodedToken.email },
     take: 20,
     orderBy: { createdAt: "desc" },
   });

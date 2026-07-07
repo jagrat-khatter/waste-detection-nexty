@@ -4,7 +4,6 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "@/lib/firebase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 const navItems = [
@@ -20,10 +19,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   async function handleLogout() {
-    await signOut();
+    await fetch("/api/auth/logout", { method: "POST" });
     setSidebarOpen(false);
-    router.push("/login");
-    router.refresh();
+    window.location.href = "/login";
   }
 
   if (loading) {
@@ -45,7 +43,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <p className="muted" style={{ color: "rgba(255,255,255,0.72)" }}>
             Signed in as
           </p>
-          <strong>{user?.email ?? user?.uid ?? "Unknown user"}</strong>
+          <strong>{user?.name ?? "Unknown user"}</strong>
+          <div style={{ fontSize: "0.875rem", opacity: 0.8 }}>{user?.email}</div>
+          {user?.role && (
+            <span className="inline-pill" style={{ marginTop: "0.5rem", display: "inline-block" }}>
+              {user.role}
+            </span>
+          )}
         </div>
 
         <nav className="dashboard-nav" aria-label="Dashboard navigation">

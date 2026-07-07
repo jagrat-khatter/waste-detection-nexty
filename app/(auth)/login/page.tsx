@@ -4,7 +4,6 @@
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "@/lib/firebase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function LoginPage() {
@@ -38,7 +37,19 @@ function LoginForm() {
     setSubmitting(true);
 
     try {
-      await signIn(email, password);
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Login failed");
+      }
+      
+      // Force page reload to re-fetch the user context
+      window.location.href = searchParams.get("next") ?? "/dashboard";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {

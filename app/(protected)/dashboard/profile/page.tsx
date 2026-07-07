@@ -1,6 +1,6 @@
 // Responsibility: Render the protected dashboard profile page for frontend auth concern.
 import { redirect } from "next/navigation";
-import { getSessionFromCookies } from "@/lib/firebase/session";
+import { getSessionFromCookies } from "@/lib/auth/jwt";
 
 export default async function ProfilePage() {
   const session = await getSessionFromCookies();
@@ -29,7 +29,7 @@ export default async function ProfilePage() {
           </div>
           <div className="stat-block" style={{ marginTop: "12px" }}>
             <strong>UID</strong>
-            {session.uid}
+            {session.id}
           </div>
         </article>
       </section>
