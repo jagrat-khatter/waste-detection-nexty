@@ -1,8 +1,6 @@
 // Responsibility: Call backend API with Firebase token for frontend auth transport concern only.
 "use client";
 
-import { auth } from "@/lib/firebase/client";
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL;
 
 function requireApiBaseUrl(): string {
