@@ -1,12 +1,12 @@
 // Responsibility: Render client signup UI for frontend auth concern
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [name, setName] = useState("");
@@ -162,5 +162,13 @@ export default function SignupPage() {
         </section>
       </section>
     </main>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>Loading...</div>}>
+      <SignupForm />
+    </Suspense>
   );
 }
