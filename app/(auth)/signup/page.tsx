@@ -60,26 +60,21 @@ function SignupForm() {
       <section className="auth-card">
         <aside className="auth-visual">
           <div>
-            <p className="auth-eyebrow">Create access</p>
             <h1>CivicX</h1>
           </div>
           <div>
-            <p>
-              Create an account, get redirected into the dashboard, and use the
-              logout flow to test other identities quickly.
-            </p>
             <ul className="feature-list">
               <li>
                 <span className="inline-pill">A</span>
-                Green-and-white onboarding card
+                Drive citywide sustainability through intelligent automation
               </li>
               <li>
                 <span className="inline-pill">B</span>
-                Local auth session cookie is written automatically
+                Monitor operations and fleet logistics seamlessly
               </li>
               <li>
                 <span className="inline-pill">C</span>
-                Dashboard flow stays ready for testing
+                Transform local waste into actionable analytics
               </li>
             </ul>
           </div>
@@ -87,9 +82,7 @@ function SignupForm() {
 
         <section className="auth-panel">
           <div>
-            <p className="auth-eyebrow">Sign up</p>
             <h1>Create account</h1>
-            <p>Create a new staff identity to test the full flow.</p>
           </div>
 
           <form className="auth-card-form" onSubmit={onSubmit}>

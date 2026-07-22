@@ -28,7 +28,6 @@ function LoginForm() {
       const next = searchParams.get("next") ?? "/dashboard";
       router.push(next);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -66,26 +65,21 @@ function LoginForm() {
       <section className="auth-card">
         <aside className="auth-visual">
           <div>
-            <p className="auth-eyebrow">Secure access</p>
             <h1>CivicX</h1>
           </div>
           <div>
-            <p>
-              Sign in to continue into the protected dashboard, switch between
-              test accounts, and verify the end-to-end auth flow.
-            </p>
             <ul className="feature-list">
               <li>
                 <span className="inline-pill">1</span>
-                Session cookie sync after Firebase login
+                Drive citywide sustainability through intelligent automation
               </li>
               <li>
                 <span className="inline-pill">2</span>
-                Proxy-safe redirect to your intended page
+                Monitor operations and fleet logistics seamlessly
               </li>
               <li>
                 <span className="inline-pill">3</span>
-                Logout anytime from the dashboard sidebar
+                Transform local waste into actionable analytics
               </li>
             </ul>
           </div>
@@ -93,9 +87,7 @@ function LoginForm() {
 
         <section className="auth-panel">
           <div>
-            <p className="auth-eyebrow">Log in</p>
             <h1>Sign in</h1>
-            <p>Use your Firebase account to enter the dashboard.</p>
           </div>
 
           <form className="auth-card-form" onSubmit={onSubmit}>

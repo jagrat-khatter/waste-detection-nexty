@@ -8,7 +8,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ user: null }, { status: 200 });
   }
 
-  // Parse cookies (basic parse, Next.js provides cookies() but requires next/headers)
   const match = cookieHeader.match(/auth_token=([^;]+)/);
   const token = match ? match[1] : null;
 
