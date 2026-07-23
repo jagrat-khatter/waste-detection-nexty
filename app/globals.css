@@ -1,5 +1,6 @@
 /* Responsibility: Provide green-and-white shared styling for frontend auth and dashboard concern pages. */
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Hanken+Grotesk:ital,wght@0,100..900&display=swap');
+@import "tailwindcss";
 
 :root {
   color-scheme: light;

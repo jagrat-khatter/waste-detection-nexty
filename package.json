@@ -16,11 +16,13 @@
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
     "jose": "5.9.6",
+    "lucide-react": "^1.26.0",
     "multer": "^2.2.0",
     "next": "16.2.9",
     "prisma": "6.12.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "recharts": "^3.10.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

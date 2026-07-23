@@ -1,6 +1,7 @@
 // Responsibility: Gate and render the protected dashboard for frontend auth concern.
 import { redirect } from "next/navigation";
 import { getSessionFromCookies } from "@/lib/auth/jwt";
+import { DashboardClient } from "./DashboardClient";
 
 export default async function DashboardPage() {
   const session = await getSessionFromCookies();
@@ -18,6 +19,8 @@ export default async function DashboardPage() {
           <span className="inline-pill">{session.email ?? session.id}</span>
         </div>
       </section>
+
+      <DashboardClient />
     </main>
   );
 }

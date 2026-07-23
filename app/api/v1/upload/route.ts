@@ -118,8 +118,8 @@ export async function POST(request: NextRequest) {
           address = geoData.address || null;
           
           if (display_name) {
-            const match = display_name.match(/Sector\s+\d+[A-Za-z]?/i);
-            if (match) sector = match[0];
+            const match = display_name.match(/Sector\s+(\d+)[A-Za-z]?/i);
+            if (match) sector = `Sector ${match[1]}`;
           }
           if (!sector && address) {
             sector = address.suburb || address.neighbourhood || address.city_district || null;
