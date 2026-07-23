@@ -18,7 +18,6 @@ export default async function DashboardPage() {
           <span className="inline-pill">{session.email ?? session.id}</span>
         </div>
       </section>
-
     </main>
   );
 }
